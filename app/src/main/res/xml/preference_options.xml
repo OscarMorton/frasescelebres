@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent">
+
+    <PreferenceCategory
+        android:title="Network configuration">
+        <EditTextPreference
+            android:key="ipPath"
+            android:title="IP"
+            android:summary="Change IP address"
+            android:dialogTitle="IP:" />
+        <EditTextPreference
+            android:key="portPatch"
+            android:title="Port"
+            android:summary="Change  port"
+            android:dialogTitle="port:" />
+    </PreferenceCategory>
+
+</PreferenceScreen>
