@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/nav_frases"
+            android:icon="@drawable/ic_frases"
+            android:title="frases" />
+        <item
+            android:id="@+id/nav_author"
+            android:icon="@drawable/ic_author"
+            android:title="Autores" />
+        <item
+            android:id="@+id/nav_category"
+            android:icon="@drawable/ic_category"
+            android:title="categorias" />
+    </group>
+
+    <item android:title="Admin">
+        <menu>
+            <item
+                android:id="@+id/nav_edid_frase"
+                android:icon="@drawable/ic_edid_frases"
+                android:title="Editar frase" />
+
+            <item
+                android:id="@+id/nav_edid_author"
+                android:icon="@drawable/ic_edid_author"
+                android:title="Editar autor" />
+
+            <item
+                android:id="@+id/nav_edid_category"
+                android:icon="@drawable/ic_frases"
+                android:title="Editar category" />
+
+        </menu>
+
+
+    </item>
+
+
+
+    <item android:title="Opciones">
+        <menu>
+
+            <item
+                android:icon="@drawable/ic_settings"
+                android:id="@+id/nav_action_settings"
+                android:orderInCategory="100"
+                android:title="Options"
+                />
+
+            <item
+                android:icon="@drawable/ic_login"
+                android:id="@+id/nav_login"
+                android:orderInCategory="100"
+                android:title="Login"/>
+
+        </menu>
+
+
+    </item>
+
+
+
+</menu>
