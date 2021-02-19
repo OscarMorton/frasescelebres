@@ -28,7 +28,6 @@ public class AdaptorFrases extends RecyclerView.Adapter<AdaptorFrases.FrasesView
     @Override
     public FrasesViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         final View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.frase_item_conteiner, parent, false);
-
         return new FrasesViewHolder(itemView,listener);
     }
 
@@ -60,6 +59,9 @@ public class AdaptorFrases extends RecyclerView.Adapter<AdaptorFrases.FrasesView
             tvTextFrase = itemView.findViewById(R.id.tvTextFrase);
             tvNombreAutor = itemView.findViewById(R.id.tvNombreAutor);
             tvNombreCategoria = itemView.findViewById(R.id.tvNombreCategoria);
+
+            this.listener = listener;
+            itemView.setOnClickListener(this);
 
         }
 
