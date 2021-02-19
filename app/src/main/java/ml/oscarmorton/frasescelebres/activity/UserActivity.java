@@ -1,4 +1,4 @@
-package ml.oscarmorton.frasescelebres;
+package ml.oscarmorton.frasescelebres.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -19,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import ml.oscarmorton.frasescelebres.R;
 import ml.oscarmorton.frasescelebres.interfacess.IAPIService;
 import ml.oscarmorton.frasescelebres.model.Autor;
 import ml.oscarmorton.frasescelebres.model.Categoria;

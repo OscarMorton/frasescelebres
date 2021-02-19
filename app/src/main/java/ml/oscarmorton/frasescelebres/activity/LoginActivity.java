@@ -1,4 +1,4 @@
-package ml.oscarmorton.frasescelebres;
+package ml.oscarmorton.frasescelebres.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,6 +11,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import ml.oscarmorton.frasescelebres.DB.DBHelper;
+import ml.oscarmorton.frasescelebres.R;
+import ml.oscarmorton.frasescelebres.TipoUsuario;
 
 
 public class LoginActivity extends AppCompatActivity {

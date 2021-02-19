@@ -1,7 +1,14 @@
 package ml.oscarmorton.frasescelebres.model;
 
-public class Frase {
+import android.annotation.SuppressLint;
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import java.io.Serializable;
+
+public class Frase implements Serializable {
     private static final String TAG = Class.class.getSimpleName();
+
 
     private int id;
     private String texto;
@@ -104,4 +111,6 @@ public class Frase {
                 ", categoria=" + categoria +
                 '}';
     }
+
+
 }

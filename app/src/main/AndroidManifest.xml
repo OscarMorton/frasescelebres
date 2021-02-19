@@ -15,11 +15,11 @@
         android:theme="@style/Theme.Frasescelebres"
         tools:targetApi="n">
 
-        <activity android:name=".MainActivity">
+        <activity android:name=".activity.MainActivity">
 
         </activity>
-        <activity android:name=".SettingsActivity" />
-        <activity android:name=".LoginActivity">
+        <activity android:name=".activity.SettingsActivity" />
+        <activity android:name=".activity.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

@@ -1,4 +1,4 @@
-package ml.oscarmorton.frasescelebres;
+package ml.oscarmorton.frasescelebres.activity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceManager;
 
 import android.content.Intent;
@@ -14,10 +15,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
@@ -28,6 +25,8 @@ import java.util.Date;
 import java.util.List;
 
 import ml.oscarmorton.frasescelebres.DB.DBHelper;
+import ml.oscarmorton.frasescelebres.R;
+import ml.oscarmorton.frasescelebres.UserSession;
 import ml.oscarmorton.frasescelebres.fragments.AutoresEdidFragment;
 import ml.oscarmorton.frasescelebres.fragments.AutoresFragment;
 import ml.oscarmorton.frasescelebres.fragments.CategoriaEdidFragment;
@@ -35,6 +34,7 @@ import ml.oscarmorton.frasescelebres.fragments.CategoriaFragment;
 import ml.oscarmorton.frasescelebres.fragments.FrasesEdidFragment;
 import ml.oscarmorton.frasescelebres.fragments.FrasesFragment;
 import ml.oscarmorton.frasescelebres.interfacess.IAPIService;
+import ml.oscarmorton.frasescelebres.listeners.IFrasesListener;
 import ml.oscarmorton.frasescelebres.model.Autor;
 import ml.oscarmorton.frasescelebres.model.Categoria;
 import ml.oscarmorton.frasescelebres.model.Frase;
@@ -43,36 +43,38 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, IFrasesListener {
 
     /*TODO
-       make users only once
-       make basic list all frases
-       make interface
+       list all frases
+       list all author
+       list all categories
+       show list of particular frases/author/category
+       Frase del dia
+       Make read me!
+       Maybes:
+
+
+
+
+
        
 
      */
-
-
-    private SharedPreferences preferences;
-    private String ipAdress;
-    private String port;
     private IAPIService apiService;
-
-    private TextView tvHello;
-    private Button bLoadFrases;
-
-    public List<Frase> frases;
-    public StringBuilder sb;
     public DBHelper dbHelper;
+    private SharedPreferences preferences;
+
+    private String currentUserPermissions;
+
+
+    public ArrayList<Frase> frases;
+    public StringBuilder sb;
+
+    private UserSession userSession;
 
     private DrawerLayout drawer;
 
-    private TipoUsuario tipoUsuario;
-
-    private TextView tvUserName, tvPassword;
-    private EditText username, password;
-    private String currentUserPermissions;
 
     private MenuItem navFrases, navFrasesEdid, navAuthor, navAuthorEdid, navCategory, navCategoryEdid;
 
@@ -81,18 +83,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        // Toolbar
         Toolbar toolbar = findViewById(R.id.tooldbar);
         setSupportActionBar(toolbar);
 
         // Getting the ip and the port from preferences
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        ipAdress = preferences.getString("ipPath", "192.168.1.1");
-        port = preferences.getString("portPath", "8090");
+
 
         //Getting the apiRest Client
-        apiService = RestClient.getInstance(this);
 
+        apiService = RestClient.getInstance(this);
+        // Getting the user permissions
         currentUserPermissions = "";
         currentUserPermissions = getIntent().getStringExtra("usuarioTipo");
 
@@ -111,7 +113,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.setNavigationItemSelectedListener(this);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar,
                 R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
@@ -134,44 +135,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navCategoryEdid.setEnabled(false);
 
         // Depending on the user, we activate navigation items
-        if(currentUserPermissions.equalsIgnoreCase("admin")){
+        if (currentUserPermissions.equalsIgnoreCase("admin")) {
             navFrases.setEnabled(true);
             navFrasesEdid.setEnabled(true);
             navAuthor.setEnabled(true);
             navAuthorEdid.setEnabled(true);
             navCategory.setEnabled(true);
             navCategoryEdid.setEnabled(true);
-        }else if(currentUserPermissions.equalsIgnoreCase("user")){
+        } else if (currentUserPermissions.equalsIgnoreCase("user")) {
             navFrases.setEnabled(true);
             navAuthor.setEnabled(true);
             navCategory.setEnabled(true);
         }
 
 
-
-
         // Generating the users in the Database
         dbHelper = DBHelper.getInstance(this);
-        dbHelper.setPremadeUsers();
-
-/*
-        bLoadFrases.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                tvHello.setText(frases.get(1).toString());
-                Log.d(MainActivity.class.getSimpleName(), "Button pressed");
-                //Getting all the frases and converting it to 1 string using string builder
-                for (int i = 0; i < frases.size(); i++) {
-                    sb.append(frases.get(i).toString());
-                    Log.d(MainActivity.class.getSimpleName(), "Frase " + i + ":" + frases.get(i).toString());
-                }
-
-            }
-        });
-*/
 
 
         getFrases();
+        //Getting all the frases and converting it to 1 string using string builder
 
 
         //addFrase();
@@ -241,7 +224,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onResponse(Call<List<Frase>> call, Response<List<Frase>> response) {
                 if (response.isSuccessful()) {
-                    frases = response.body();
+                    frases = new ArrayList<>(response.body());
+                    // Once fouud, I add the frases to the users session
+                    userSession = new UserSession(frases);
+
+
+                    for (int i = 0; i < frases.size(); i++) {
+                        Log.d(MainActivity.class.getSimpleName(), "Frase " + i + ":" + frases.get(i).toString());
+                    }
+                    Log.i(MainActivity.class.getSimpleName(), "GotFrases");
 
                 } else {
                     Log.i(MainActivity.class.getSimpleName(), "Get frases not succesful");
@@ -260,15 +251,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
+
         switch (item.getItemId()) {
             case R.id.nav_frases:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new FrasesFragment()).commit();
+                loadFragmentTest();
 
                 break;
             case R.id.nav_author:
-
-
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new AutoresFragment()).commit();
                 break;
             case R.id.nav_category:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new CategoriaFragment()).commit();
@@ -332,5 +322,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void loadFragmentTest() {
+        FrasesFragment frasesFragment = new FrasesFragment();
+        Bundle bundle;
+        frasesFragment.setFrasesListener(this);
+        bundle = new Bundle();
+        bundle.putSerializable(FrasesFragment.KEY_FRASES, userSession); // CONTINUE HERE
+        frasesFragment.setArguments(bundle);
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, frasesFragment).commit();
+
+    }
+
+    @Override
+    public void onFraseSelected(int position) {
+        Log.d(MainActivity.class.getSimpleName(), "Frase selected: ");
+        Toast.makeText(this, "Frase seleccionado", Toast.LENGTH_SHORT).show();
     }
 }

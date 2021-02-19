@@ -1,8 +1,10 @@
-package ml.oscarmorton.frasescelebres;
+package ml.oscarmorton.frasescelebres.fragments;
 
 import android.os.Bundle;
 
 import androidx.preference.PreferenceFragmentCompat;
+
+import ml.oscarmorton.frasescelebres.R;
 
 public class OptionsFragment extends PreferenceFragmentCompat {
     @Override

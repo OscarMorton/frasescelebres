@@ -14,6 +14,9 @@ import ml.oscarmorton.frasescelebres.TipoUsuario;
 public class  DBHelper extends SQLiteOpenHelper {
     public static final String DBNAME = "Login.db";
     private static final int DB_VERSION = 1;
+    private static final String CREATE_SIMPLE_USER = "INSERT INTO users (username, password, esAdmin) VALUES('frases', 'frases', ' " + TipoUsuario.NOADMIN.toString() + "');";
+    private static final String CREATE_ADMIN_USER ="INSERT INTO users (username, password, esAdmin) VALUES('frasesAdmin', 'frasesAdmin', '" + TipoUsuario.ADMIN.toString() + "');";
+
     private static DBHelper sInstace = null;
     private TipoUsuario tipoUsuario;
 
@@ -37,6 +40,9 @@ public class  DBHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase MyDB) {
         MyDB.execSQL("create table users(username TEXT primary key, password TEXT, esAdmin TEXT)");
+        MyDB.execSQL(CREATE_SIMPLE_USER);
+        MyDB.execSQL(CREATE_ADMIN_USER);
+
 
 
 
@@ -48,10 +54,7 @@ public class  DBHelper extends SQLiteOpenHelper {
 
     }
 
-    public void setPremadeUsers(){
-        this .insertData("frases", "frases", TipoUsuario.NOADMIN);
-        this.insertData("frasesAdmin", "frasesAdmin", TipoUsuario.ADMIN);
-    }
+
 
     public Boolean insertData(String username, String password, TipoUsuario tipoUsuario) {
         SQLiteDatabase MyDB = this.getWritableDatabase();
