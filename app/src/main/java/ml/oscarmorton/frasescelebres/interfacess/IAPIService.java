@@ -2,6 +2,8 @@ package ml.oscarmorton.frasescelebres.interfacess;
 
 import java.util.List;
 
+import ml.oscarmorton.frasescelebres.model.Autor;
+import ml.oscarmorton.frasescelebres.model.Categoria;
 import ml.oscarmorton.frasescelebres.model.Frase;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -13,6 +15,13 @@ import retrofit2.http.POST;
 public interface IAPIService {
     @GET("frase/all")
     Call<List<Frase>> getFrases();
+
+    @GET("autor/all")
+    Call<List<Autor>> getAutores();
+
+    @GET("categoria/all")
+    Call<List<Categoria>> getCategoria();
+
 
     @POST("frase/add")
     Call<Boolean> addFrase(@Body Frase frase);

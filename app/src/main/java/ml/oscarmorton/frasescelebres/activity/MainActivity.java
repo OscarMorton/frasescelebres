@@ -64,9 +64,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
     public ArrayList<Frase> frases;
+    public ArrayList<Autor> autores;
+    public ArrayList<Categoria> categorias;
+
     public StringBuilder sb;
 
-    private UserSession userSession;
+    public UserSession userSession;
 
     private DrawerLayout drawer;
 
@@ -82,6 +85,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Toolbar toolbar = findViewById(R.id.tooldbar);
         setSupportActionBar(toolbar);
 
+        userSession = new UserSession();
+
         // Getting the ip and the port from preferences
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
@@ -95,6 +100,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
         frases = new ArrayList<>();
+        categorias = new ArrayList<>();
+        autores = new ArrayList<>();
         sb = new StringBuilder();
 
         //  tvHello = findViewById(R.id.tvHello);
@@ -149,6 +156,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
         getFrases();
+        getAutores();
+        getCategorias();
         //Getting all the frases and converting it to 1 string using string builder
 
 
@@ -212,16 +221,71 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
     }
 
-    public void getFrases() {
-        String content = "";
+    public void getAutores(){
+        apiService.getAutores().enqueue(new Callback<List<Autor>>() {
+            @Override
+            public void onResponse(Call<List<Autor>> call, Response<List<Autor>> response) {
+                if (response.isSuccessful()) {
+                    autores = new ArrayList<>(response.body());
+                    // Once fouud, I add the frases to the users session
+                    userSession.setAutores(autores);
 
+
+                    for (int i = 0; i < autores.size(); i++) {
+                        Log.d(MainActivity.class.getSimpleName(), "Autores " + i + ":" + autores.get(i).toString());
+                    }
+                    Log.i(MainActivity.class.getSimpleName(), "gotAutores");
+
+                } else {
+                    Log.i(MainActivity.class.getSimpleName(), "Get frases not succesful");
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Autor>> call, Throwable t) {
+                Toast.makeText(MainActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    public void getCategorias(){
+        apiService.getCategoria().enqueue(new Callback<List<Categoria>>() {
+            @Override
+            public void onResponse(Call<List<Categoria>> call, Response<List<Categoria>> response) {
+                if (response.isSuccessful()) {
+                    categorias = new ArrayList<>(response.body());
+                    // Once fouud, I add the frases to the users session
+                    userSession.setCategorias(categorias);
+
+
+                    for (int i = 0; i < categorias.size(); i++) {
+                        Log.d(MainActivity.class.getSimpleName(), "Categorias " + i + ":" + categorias.get(i).toString());
+                    }
+                    Log.i(MainActivity.class.getSimpleName(), "GotCategorias");
+
+                } else {
+                    Log.i(MainActivity.class.getSimpleName(), "Get frases not succesful");
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Categoria>> call, Throwable t) {
+                Toast.makeText(MainActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+
+    }
+
+    public void getFrases() {
         apiService.getFrases().enqueue(new Callback<List<Frase>>() {
             @Override
             public void onResponse(Call<List<Frase>> call, Response<List<Frase>> response) {
                 if (response.isSuccessful()) {
                     frases = new ArrayList<>(response.body());
                     // Once fouud, I add the frases to the users session
-                    userSession = new UserSession(frases);
+                    userSession.setFrases(frases);
 
 
                     for (int i = 0; i < frases.size(); i++) {

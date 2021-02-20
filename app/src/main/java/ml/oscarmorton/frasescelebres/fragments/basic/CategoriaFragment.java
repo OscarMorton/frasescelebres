@@ -38,7 +38,7 @@ public class CategoriaFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         userSession = (UserSession) getArguments().getSerializable(KEY_CATEGORIA);
-        categorias = userSession.getCategoria();
+        categorias = userSession.getCategorias();
         return inflater.inflate(R.layout.fragment_categorias,container,false);
     }
 

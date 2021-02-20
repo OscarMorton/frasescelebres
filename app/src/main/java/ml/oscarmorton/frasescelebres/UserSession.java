@@ -18,8 +18,8 @@ public class UserSession implements Serializable {
     private ArrayList<Autor> autores;
     private ArrayList<Categoria> categorias;
 
-    public UserSession(ArrayList<Frase> frases) {
-        this.frases = frases;
+    public UserSession() {
+
     }
 
 
@@ -32,25 +32,7 @@ public class UserSession implements Serializable {
     }
 
 
-    // Getters for the authors and categories
     public ArrayList<Autor> getAutores() {
-        int currentID = -1;
-        ArrayList<Integer> idsAutores = new ArrayList<Integer>();
-
-        ArrayList<Autor> autores = new ArrayList<>();
-        for (int i = 0; i < frases.size(); i++) {
-            currentID = frases.get(i).getAutor().getId();
-            Log.d("TESTAUTHORS", frases.get(i).getAutor().toString());
-
-           if(!checkIdInArray(idsAutores, currentID)){
-               idsAutores.add(currentID);
-                autores.add(frases.get(i).getAutor());
-               Log.d("TESTAUTHORS", "TEST IF: " + frases.get(i).getAutor().toString());
-
-           }
-
-
-        }
         return autores;
     }
 
@@ -66,15 +48,18 @@ public class UserSession implements Serializable {
 
 
 
-    public ArrayList<Categoria> getCategoria() {
-        ArrayList<Categoria> categorias = new ArrayList<>();
-        for (int i = 0; i < frases.size(); i++) {
-            categorias.add(frases.get(i).getCategoria());
 
-        }
+    public void setAutores(ArrayList<Autor> autores) {
+        this.autores = autores;
+    }
+
+    public ArrayList<Categoria> getCategorias() {
         return categorias;
     }
 
+    public void setCategorias(ArrayList<Categoria> categorias) {
+        this.categorias = categorias;
+    }
 
     public ArrayList<Frase> getFrasesFromAutorId(int id) {
 
