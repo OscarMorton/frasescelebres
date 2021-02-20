@@ -19,7 +19,10 @@
 
         </activity>
         <activity android:name=".activity.SettingsActivity" />
+        <activity android:name=".activity.AddFrase"/>
+
         <activity android:name=".activity.LoginActivity">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

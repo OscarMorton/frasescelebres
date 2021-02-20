@@ -52,7 +52,7 @@ public class AdaptorAutor extends RecyclerView.Adapter<AdaptorAutor.FrasesViewHo
     }
 
 
-    public static class FrasesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public static class FrasesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener{
         private TextView tvIdAutor;
         private TextView tvNombreAutor;
         private TextView tvProfesionAutor;
@@ -73,6 +73,7 @@ public class AdaptorAutor extends RecyclerView.Adapter<AdaptorAutor.FrasesViewHo
 
             this.listener = listener;
             itemView.setOnClickListener(this);
+            itemView.setOnLongClickListener(this);
 
         }
 
@@ -90,6 +91,16 @@ public class AdaptorAutor extends RecyclerView.Adapter<AdaptorAutor.FrasesViewHo
             if(listener != null) {
                 listener.onAutorSelected(getAdapterPosition());
             }
+        }
+
+        @Override
+        public boolean onLongClick(View v) {
+            if(listener != null){
+                listener.onLongClickAutor(getAdapterPosition());
+                return true;
+
+            }
+            return  false;
         }
     }
 }

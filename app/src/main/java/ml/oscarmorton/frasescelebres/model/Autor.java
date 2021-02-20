@@ -1,6 +1,8 @@
 package ml.oscarmorton.frasescelebres.model;
 
-public class Autor {
+import java.io.Serializable;
+
+public class Autor implements Serializable {
     private int id;
     private String nombre;
     /** Año de nacimiento del autor. Números negativos representan AC (Antes de Cristo) */

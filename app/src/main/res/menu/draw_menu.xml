@@ -19,27 +19,7 @@
             android:title="categorias" />
     </group>
 
-    <item android:title="Admin">
-        <menu>
-            <item
-                android:id="@+id/nav_edid_frase"
-                android:icon="@drawable/ic_edid_frases"
-                android:title="Editar frase" />
 
-            <item
-                android:id="@+id/nav_edid_author"
-                android:icon="@drawable/ic_edid_author"
-                android:title="Editar autor" />
-
-            <item
-                android:id="@+id/nav_edid_category"
-                android:icon="@drawable/ic_frases"
-                android:title="Editar category" />
-
-        </menu>
-
-
-    </item>
 
 
 

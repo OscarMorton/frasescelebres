@@ -26,14 +26,14 @@ public interface IAPIService {
     @GET("categoria/all")
     Call<List<Categoria>> getCategoria();
 
-    @DELETE("category/delete")
-    Call<Boolean> deleteCategory(@Body Categoria categoria);
+    @DELETE("autor/delete//{id}")
+    Call<Void> deleteAutor(@Path("id") int id);
+
+    @DELETE("categoria/delete//{id}")
+    Call<Void> deleteCategoria(@Path("id") int id);
 
     @DELETE("frase/delete//{id}")
     Call<Void> deleteFrase(@Path("id") int id);
-
-
-
 
 
 

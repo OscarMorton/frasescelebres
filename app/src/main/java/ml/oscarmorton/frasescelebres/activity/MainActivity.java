@@ -18,6 +18,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 
 import java.text.SimpleDateFormat;
@@ -28,11 +29,8 @@ import java.util.List;
 import ml.oscarmorton.frasescelebres.DB.DBHelper;
 import ml.oscarmorton.frasescelebres.R;
 import ml.oscarmorton.frasescelebres.UserSession;
-import ml.oscarmorton.frasescelebres.fragments.basic.AutoresEdidFragment;
 import ml.oscarmorton.frasescelebres.fragments.basic.AutoresFragment;
-import ml.oscarmorton.frasescelebres.fragments.basic.CategoriaEdidFragment;
 import ml.oscarmorton.frasescelebres.fragments.basic.CategoriaFragment;
-import ml.oscarmorton.frasescelebres.fragments.basic.FrasesEdidFragment;
 import ml.oscarmorton.frasescelebres.fragments.basic.FrasesFragment;
 import ml.oscarmorton.frasescelebres.interfacess.IAPIService;
 import ml.oscarmorton.frasescelebres.interfacess.listeners.IAutorListener;
@@ -42,7 +40,6 @@ import ml.oscarmorton.frasescelebres.model.Autor;
 import ml.oscarmorton.frasescelebres.model.Categoria;
 import ml.oscarmorton.frasescelebres.model.Frase;
 import ml.oscarmorton.frasescelebres.rest.RestClient;
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -50,7 +47,7 @@ import retrofit2.Response;
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, IFrasesListener, IAutorListener, ICategoriaListener {
 
     /*TODO
-       Delete unsesesary fragments now i've got a user system
+       Organize code 1/2
        Delete frase/autor/categoria GET BACK TO THIS
        modify frase/autor/categoria
        Add frase/autor/categoria
@@ -61,8 +58,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      */
     private IAPIService apiService;
     public DBHelper dbHelper;
-    private SharedPreferences preferences;
-
     private String currentUserPermissions;
 
 
@@ -77,26 +72,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private DrawerLayout drawer;
 
 
-    private MenuItem navFrases, navFrasesEdid, navAuthor, navAuthorEdid, navCategory, navCategoryEdid;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         // Toolbar
         Toolbar toolbar = findViewById(R.id.tooldbar);
         setSupportActionBar(toolbar);
 
+        // Initializing userSession
         userSession = new UserSession();
 
         // Getting the ip and the port from preferences
-        preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
 
         //Getting the apiRest Client
-
         apiService = RestClient.getInstance(this);
+
         // Getting the user permissions
         currentUserPermissions = "";
         currentUserPermissions = getIntent().getStringExtra("usuarioTipo");
@@ -106,11 +100,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         categorias = new ArrayList<>();
         autores = new ArrayList<>();
         sb = new StringBuilder();
-
-        //  tvHello = findViewById(R.id.tvHello);
-        //bLoadFrases = findViewById(R.id.bLoadFrases);
-        //vHello.setText(currentUserPermissions);
-
 
         // Creating the drawer
         drawer = findViewById(R.id.drawer_layout);
@@ -122,45 +111,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         toggle.syncState();
 
 
-        // getting the IDs of the nav items
-        Menu menuNav = navigationView.getMenu();
-        navFrases = menuNav.findItem(R.id.nav_frases);
-        navFrasesEdid = menuNav.findItem(R.id.nav_edid_frase);
-        navAuthor = menuNav.findItem(R.id.nav_author);
-        navAuthorEdid = menuNav.findItem(R.id.nav_edid_author);
-        navCategory = menuNav.findItem(R.id.nav_category);
-        navCategoryEdid = menuNav.findItem(R.id.nav_edid_category);
-
-        // Deactivating the nav items by default
-        navFrases.setVisible(false);
-        navFrasesEdid.setVisible(false);
-        navAuthor.setVisible(false);
-        navAuthorEdid.setVisible(false);
-        navCategory.setVisible(false);
-        navCategoryEdid.setVisible(false);
-
-        // Depending on the user, we activate navigation items
-        if (currentUserPermissions.equalsIgnoreCase("admin")) {
-            navFrases.setVisible(true);
-            navFrasesEdid.setVisible(true);
-            navAuthor.setVisible(true);
-            navAuthorEdid.setVisible(true);
-            navCategory.setVisible(true);
-            navCategoryEdid.setVisible(true);
-        } else if (currentUserPermissions.equalsIgnoreCase("user")) {
-            navFrases.setVisible(true);
-            navAuthor.setVisible(true);
-            navCategory.setVisible(true);
-        }
         // Generating the users in the Database
         dbHelper = DBHelper.getInstance(this);
-
 
         // Getting the content of the database. All content is put in UserSession
         getFrases();
         getAutores();
         getCategorias();
-
 
         //addFrase();
         //addFraseValues("Frase de prueba","2020-02-25",1,1);
@@ -310,7 +267,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
 
-
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 
@@ -326,24 +282,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.nav_category:
                 loadFragmentCategoria();
                 break;
-            case R.id.nav_edid_frase:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new FrasesEdidFragment()).commit();
-                break;
-
-            case R.id.nav_edid_author:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new AutoresEdidFragment()).commit();
-                break;
-
-            case R.id.nav_edid_category:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new CategoriaEdidFragment()).commit();
-                break;
             case R.id.nav_login:
                 startActivity(new Intent(MainActivity.this, LoginActivity.class));
                 break;
             case R.id.nav_action_settings:
                 startActivity(new Intent(MainActivity.this, SettingsActivity.class));
                 break;
-
 
         }
 
@@ -352,6 +296,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
+    // On back pressed we close the drawer
     @Override
     public void onBackPressed() {
         if (drawer.isDrawerOpen(GravityCompat.START)) {
@@ -386,6 +331,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         return super.onOptionsItemSelected(item);
     }
+
+
+    // Load fragments
 
     public void loadFragmentFrases(FrasesFragment.SeachType type, int id) {
         FrasesFragment frasesFragment = new FrasesFragment();
@@ -438,19 +386,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setTitle("Categorias");
     }
 
-    @Override
-    public void onFraseSelected(int position) {
-        Log.d(MainActivity.class.getSimpleName(), "Frase selected: ");
-        Toast.makeText(this, "Frase seleccionado", Toast.LENGTH_SHORT).show();
 
-
-    }
-
-    public void deleteFrase(int position){
+    // Deletes
+    public void deleteFrase(int position) {
         Frase frase = userSession.getFrases().get(position);
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
         alert.setTitle("Borrar Frase " + frase.getId());
-        alert.setMessage("¿Seguro que desea borrar la frase "+ frase.getId() + "?");
+        alert.setMessage("¿Seguro que desea borrar la frase " + frase.getId() + "?");
 
         alert.setPositiveButton("Si", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
@@ -458,7 +400,78 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 Call<Void> deleteRequest = apiService.deleteFrase(frase.getId());
                 deleteRequest.enqueue(new Callback<Void>() {
                     @Override
-                    public void onResponse(Call<Void> call, Response<Void   > response) {
+                    public void onResponse(Call<Void> call, Response<Void> response) {
+                        Log.d(MainActivity.class.getSimpleName(), "DELETED ");
+                    }
+
+                    @Override
+                    public void onFailure(Call<Void> call, Throwable t) {
+                        Log.d(MainActivity.class.getSimpleName(), "NOT DELETED " + t.getMessage());
+
+                    }
+                });
+
+            }
+        });
+
+        alert.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                // TODO Auto-generated method stub
+                return;
+            }
+        });
+        alert.show();
+
+    }
+
+    public void deleteAutor(int position){
+        Autor autor = userSession.getAutores().get(position);
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setTitle("Borrar Frase " + autor.getId());
+        alert.setMessage("¿Seguro que desea borrar la frase " + autor.getId() + "?");
+
+        alert.setPositiveButton("Si", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+
+                Call<Void> deleteRequest = apiService.deleteAutor(autor.getId());
+                deleteRequest.enqueue(new Callback<Void>() {
+                    @Override
+                    public void onResponse(Call<Void> call, Response<Void> response) {
+                        Log.d(MainActivity.class.getSimpleName(), "DELETED ");
+                    }
+
+                    @Override
+                    public void onFailure(Call<Void> call, Throwable t) {
+                        Log.d(MainActivity.class.getSimpleName(), "NOT DELETED " + t.getMessage());
+
+                    }
+                });
+
+            }
+        });
+
+        alert.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                // TODO Auto-generated method stub
+                return;
+            }
+        });
+        alert.show();
+    }
+
+    public void deleteCategoria(int position){
+        Categoria categoria = userSession.getCategorias().get(position);
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setTitle("Borrar Frase " + categoria.getId());
+        alert.setMessage("¿Seguro que desea borrar la frase " + categoria.getId() + "?");
+
+        alert.setPositiveButton("Si", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+
+                Call<Void> deleteRequest = apiService.deleteCategoria(categoria.getId());
+                deleteRequest.enqueue(new Callback<Void>() {
+                    @Override
+                    public void onResponse(Call<Void> call, Response<Void> response) {
                         Log.d(MainActivity.class.getSimpleName(), "DELETED ");
                     }
 
@@ -482,16 +495,43 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
 
+    // Listeners
+    @Override
+    public void onFraseSelected(int position) {
+        Log.d(MainActivity.class.getSimpleName(), "Frase selected: ");
+        Toast.makeText(this, "Frase seleccionado", Toast.LENGTH_SHORT).show();
+
+
+    }
+
     @Override
     public void onLongClickFrase(int position) {
         Log.d(MainActivity.class.getSimpleName(), "Long click frases activated ");
         Toast.makeText(this, userSession.getFrases().get(position).getAutor().getNombre(), Toast.LENGTH_SHORT).show();
-        if(currentUserPermissions.equalsIgnoreCase("admin")){
-            deleteFrase(position);
+        if (currentUserPermissions.equalsIgnoreCase("admin")) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Admin options");
+            builder.setItems(new CharSequence[]
+                            {"Cancel", "Edit", "Eelete"},
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
 
+                            switch (which) {
+                                case 0:
+
+                                    break;
+                                case 1:
+                                    Toast.makeText(MainActivity.this, "Edid frase", Toast.LENGTH_SHORT).show();
+                                    break;
+                                case 2:
+                                    deleteFrase(position);
+                                    break;
+
+                            }
+                        }
+                    });
+            builder.create().show();
         }
-
-
 
     }
 
@@ -502,10 +542,71 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
+    public void onLongClickAutor(int position) {
+        Log.d(MainActivity.class.getSimpleName(), "Long click Autor activated ");
+        Toast.makeText(this, userSession.getAutores().get(position).getNombre(), Toast.LENGTH_SHORT).show();
+        if (currentUserPermissions.equalsIgnoreCase("admin")) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Admin options");
+            builder.setItems(new CharSequence[]
+                            {"Cancel", "Edit", "Delete"},
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+
+                            switch (which) {
+                                case 0:
+
+                                    break;
+                                case 1:
+                                    Toast.makeText(MainActivity.this, "Edid frase", Toast.LENGTH_SHORT).show();
+                                    break;
+                                case 2:
+                                    deleteAutor(position);
+                                    break;
+
+                            }
+                        }
+                    });
+            builder.create().show();
+        }
+
+    }
+
+    @Override
     public void onCategoriaSelected(int position) {
         Toast.makeText(this, "Categoria Selected", Toast.LENGTH_SHORT).show();
         loadFragmentFrases(FrasesFragment.SeachType.CATEGORIA, position);
 
 
+    }
+
+    @Override
+    public void onLongClickCategoria(int position) {
+        Log.d(MainActivity.class.getSimpleName(), "Long click frases activated ");
+        Toast.makeText(this, userSession.getCategorias().get(position).getNombre(), Toast.LENGTH_SHORT).show();
+        if (currentUserPermissions.equalsIgnoreCase("admin")) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Admin options");
+            builder.setItems(new CharSequence[]
+                            {"Cancel", "Edit", "Delete"},
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+
+                            switch (which) {
+                                case 0:
+
+                                    break;
+                                case 1:
+                                    Toast.makeText(MainActivity.this, "Edid frase", Toast.LENGTH_SHORT).show();
+                                    break;
+                                case 2:
+                                    deleteCategoria(position);
+                                    break;
+
+                            }
+                        }
+                    });
+            builder.create().show();
+        }
     }
 }

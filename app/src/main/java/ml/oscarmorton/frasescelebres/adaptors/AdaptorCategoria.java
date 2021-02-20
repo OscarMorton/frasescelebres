@@ -53,7 +53,7 @@ public class AdaptorCategoria extends RecyclerView.Adapter<AdaptorCategoria.Cate
     }
 
 
-    public static class CategoriaViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public static class CategoriaViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener{
         private TextView tvIdCategoria;
         private TextView tvNombreCategoria;
 
@@ -70,6 +70,7 @@ public class AdaptorCategoria extends RecyclerView.Adapter<AdaptorCategoria.Cate
 
             this.listener = listener;
             itemView.setOnClickListener(this);
+            itemView.setOnLongClickListener(this);
 
         }
 
@@ -85,6 +86,16 @@ public class AdaptorCategoria extends RecyclerView.Adapter<AdaptorCategoria.Cate
             if(listener != null) {
                 listener.onCategoriaSelected(getAdapterPosition());
             }
+        }
+
+        @Override
+        public boolean onLongClick(View v) {
+            if(listener != null){
+                listener.onLongClickCategoria(getAdapterPosition());
+                return true;
+
+            }
+            return  false;
         }
     }
 }

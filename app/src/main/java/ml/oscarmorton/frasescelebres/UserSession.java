@@ -73,6 +73,29 @@ public class UserSession implements Serializable {
         return frasesReturn;
     }
 
+    public ArrayList<String> getAllAutorIds(){
+      ArrayList<String> ids = new ArrayList<>();
+        Log.d(UserSession.class.getSimpleName(), "got ids ");
+
+        for(int i = 0; i < autores.size(); i++){
+           ids.add(String.valueOf(autores.get(i).getId()));
+            Log.d(UserSession.class.getSimpleName(), "got id: " + String.valueOf(autores.get(i).getId()));
+        }
+        return  ids;
+    }
+
+    public ArrayList<String> getAllCategoriasIds(){
+        ArrayList<String> ids = new ArrayList<>();
+        Log.d(UserSession.class.getSimpleName(), "got ids ");
+
+        for(int i = 0; i < autores.size(); i++){
+            ids.add(String.valueOf(categorias.get(i).getId()));
+            Log.d(UserSession.class.getSimpleName(), "got id: " + String.valueOf(categorias.get(i).getId()));
+        }
+        return  ids;
+    }
+
+
     public ArrayList<Frase> getFrasesFromCategorisId(int id) {
 
         ArrayList<Frase> frasesReturn = new ArrayList<>();
