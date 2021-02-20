@@ -42,7 +42,13 @@ public class AdaptorAutor extends RecyclerView.Adapter<AdaptorAutor.FrasesViewHo
 
     @Override
     public int getItemCount() {
-        return autores.size();
+        if(autores != null){
+            return autores.size();
+
+        }else{
+            return  0;
+        }
+
     }
 
 

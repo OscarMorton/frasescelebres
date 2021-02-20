@@ -5,12 +5,16 @@ import java.util.List;
 import ml.oscarmorton.frasescelebres.model.Autor;
 import ml.oscarmorton.frasescelebres.model.Categoria;
 import ml.oscarmorton.frasescelebres.model.Frase;
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
 
 public interface IAPIService {
     @GET("frase/all")
@@ -21,6 +25,16 @@ public interface IAPIService {
 
     @GET("categoria/all")
     Call<List<Categoria>> getCategoria();
+
+    @DELETE("category/delete")
+    Call<Boolean> deleteCategory(@Body Categoria categoria);
+
+    @DELETE("frase/delete//{id}")
+    Call<Void> deleteFrase(@Path("id") int id);
+
+
+
+
 
 
     @POST("frase/add")

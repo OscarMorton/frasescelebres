@@ -2,12 +2,14 @@ package ml.oscarmorton.frasescelebres.activity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.preference.PreferenceManager;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -40,6 +42,7 @@ import ml.oscarmorton.frasescelebres.model.Autor;
 import ml.oscarmorton.frasescelebres.model.Categoria;
 import ml.oscarmorton.frasescelebres.model.Frase;
 import ml.oscarmorton.frasescelebres.rest.RestClient;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -47,10 +50,10 @@ import retrofit2.Response;
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, IFrasesListener, IAutorListener, ICategoriaListener {
 
     /*TODO
-       show list of particular frases/author/category
-       Exception control cant connect
-       Delete frase/autor/categoria
+       Delete unsesesary fragments now i've got a user system
+       Delete frase/autor/categoria GET BACK TO THIS
        modify frase/autor/categoria
+       Add frase/autor/categoria
        Frase del dia
        Make read me!
        Maybes:
@@ -149,16 +152,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             navAuthor.setVisible(true);
             navCategory.setVisible(true);
         }
-
-
         // Generating the users in the Database
         dbHelper = DBHelper.getInstance(this);
 
 
+        // Getting the content of the database. All content is put in UserSession
         getFrases();
         getAutores();
         getCategorias();
-        //Getting all the frases and converting it to 1 string using string builder
 
 
         //addFrase();
@@ -221,7 +222,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
     }
 
-    public void getAutores(){
+    public void getAutores() {
         apiService.getAutores().enqueue(new Callback<List<Autor>>() {
             @Override
             public void onResponse(Call<List<Autor>> call, Response<List<Autor>> response) {
@@ -249,7 +250,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
     }
 
-    public void getCategorias(){
+    public void getCategorias() {
         apiService.getCategoria().enqueue(new Callback<List<Categoria>>() {
             @Override
             public void onResponse(Call<List<Categoria>> call, Response<List<Categoria>> response) {
@@ -307,6 +308,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
     }
+
+
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -384,14 +387,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return super.onOptionsItemSelected(item);
     }
 
-    public void loadFragmentFrases( FrasesFragment.SeachType type, int id) {
+    public void loadFragmentFrases(FrasesFragment.SeachType type, int id) {
         FrasesFragment frasesFragment = new FrasesFragment();
         Bundle bundle;
         frasesFragment.setFrasesListener(this);
         bundle = new Bundle();
         bundle.putSerializable(FrasesFragment.KEY_FRASES, userSession);
 
-        switch (type){
+        switch (type) {
             case NONE:
                 // do nothing
                 break;
@@ -406,6 +409,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         frasesFragment.setArguments(bundle);
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, frasesFragment).commit();
+        setTitle("Frases");
 
     }
 
@@ -419,6 +423,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         autoresFragment.setArguments(bundle);
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, autoresFragment).commit();
+        setTitle("Autores");
 
     }
 
@@ -430,12 +435,62 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         bundle.putSerializable(CategoriaFragment.KEY_CATEGORIA, userSession); // CONTINUE HERE
         categoriaFragment.setArguments(bundle);
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, categoriaFragment).commit();
-
+        setTitle("Categorias");
     }
+
     @Override
     public void onFraseSelected(int position) {
         Log.d(MainActivity.class.getSimpleName(), "Frase selected: ");
         Toast.makeText(this, "Frase seleccionado", Toast.LENGTH_SHORT).show();
+
+
+    }
+
+    public void deleteFrase(int position){
+        Frase frase = userSession.getFrases().get(position);
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setTitle("Borrar Frase " + frase.getId());
+        alert.setMessage("¿Seguro que desea borrar la frase "+ frase.getId() + "?");
+
+        alert.setPositiveButton("Si", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+
+                Call<Void> deleteRequest = apiService.deleteFrase(frase.getId());
+                deleteRequest.enqueue(new Callback<Void>() {
+                    @Override
+                    public void onResponse(Call<Void> call, Response<Void   > response) {
+                        Log.d(MainActivity.class.getSimpleName(), "DELETED ");
+                    }
+
+                    @Override
+                    public void onFailure(Call<Void> call, Throwable t) {
+                        Log.d(MainActivity.class.getSimpleName(), "NOT DELETED " + t.getMessage());
+
+                    }
+                });
+
+            }
+        });
+
+        alert.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                // TODO Auto-generated method stub
+                return;
+            }
+        });
+        alert.show();
+    }
+
+
+    @Override
+    public void onLongClickFrase(int position) {
+        Log.d(MainActivity.class.getSimpleName(), "Long click frases activated ");
+        Toast.makeText(this, userSession.getFrases().get(position).getAutor().getNombre(), Toast.LENGTH_SHORT).show();
+        if(currentUserPermissions.equalsIgnoreCase("admin")){
+            deleteFrase(position);
+
+        }
+
 
 
     }
@@ -448,9 +503,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public void onCategoriaSelected(int position) {
-        Toast.makeText(this,"Categoria Selected", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Categoria Selected", Toast.LENGTH_SHORT).show();
         loadFragmentFrases(FrasesFragment.SeachType.CATEGORIA, position);
-
 
 
     }

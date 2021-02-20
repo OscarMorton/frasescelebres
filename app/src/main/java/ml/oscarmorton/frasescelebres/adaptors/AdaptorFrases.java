@@ -40,11 +40,15 @@ public class AdaptorFrases extends RecyclerView.Adapter<AdaptorFrases.FrasesView
 
     @Override
     public int getItemCount() {
-        return frases.size();
+        if(frases != null){
+            return frases.size();
+        }else{
+            return 0;
+        }
     }
 
 
-    public static class FrasesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public static class FrasesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener{
         private TextView tvIdFrase;
         private TextView tvTextFrase;
         private TextView tvNombreAutor;
@@ -64,6 +68,8 @@ public class AdaptorFrases extends RecyclerView.Adapter<AdaptorFrases.FrasesView
 
             this.listener = listener;
             itemView.setOnClickListener(this);
+            itemView.setLongClickable(true);
+            itemView.setOnLongClickListener(this);
 
         }
 
@@ -80,6 +86,16 @@ public class AdaptorFrases extends RecyclerView.Adapter<AdaptorFrases.FrasesView
             if(listener != null) {
                 listener.onFraseSelected(getAdapterPosition());
             }
+        }
+
+        @Override
+        public boolean onLongClick(View v) {
+            if(listener != null){
+                listener.onLongClickFrase(getAdapterPosition());
+                return true;
+
+            }
+            return  false;
         }
     }
 }

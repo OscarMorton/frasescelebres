@@ -53,10 +53,10 @@ public class FrasesFragment extends Fragment {
         if(type == 1){
             id = getArguments().getInt(FrasesFragment.KEY_ID);
 
-            frases = userSession.getFrasesFromAutorId(id);
+            frases = userSession.getFrasesFromAutorId(id + 1 );
         }else if(type == 2){
             id = getArguments().getInt(FrasesFragment.KEY_ID);
-            frases = userSession.getFrasesFromCategorisId(id);
+            frases = userSession.getFrasesFromCategorisId(id + 1);
         }else{
             frases = userSession.getFrases();
 
