@@ -78,7 +78,7 @@ public class AdaptorFrases extends RecyclerView.Adapter<AdaptorFrases.FrasesView
             tvTextFrase.setText(String.valueOf(frase.getTexto()));
             tvNombreAutor.setText(String.valueOf(frase.getAutor().getNombre()));
 
-            tvNombreCategoria.setText(String.valueOf(frase.getCategoria().getNombre()));
+                tvNombreCategoria.setText(String.valueOf(frase.getCategoria().getNombre()));
         }
 
         @Override

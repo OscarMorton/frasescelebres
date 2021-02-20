@@ -47,7 +47,6 @@ import retrofit2.Response;
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, IFrasesListener, IAutorListener, ICategoriaListener {
 
     /*TODO
-       Organize code 1/2
        Delete frase/autor/categoria GET BACK TO THIS
        modify frase/autor/categoria
        Add frase/autor/categoria
@@ -60,12 +59,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public DBHelper dbHelper;
     private String currentUserPermissions;
 
-
-    public ArrayList<Frase> frases;
-    public ArrayList<Autor> autores;
-    public ArrayList<Categoria> categorias;
-
-    public StringBuilder sb;
 
     public UserSession userSession;
 
@@ -83,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setSupportActionBar(toolbar);
 
         // Initializing userSession
-        userSession = new UserSession();
+        userSession = new UserSession(this);
 
         // Getting the ip and the port from preferences
 
@@ -95,11 +88,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         currentUserPermissions = "";
         currentUserPermissions = getIntent().getStringExtra("usuarioTipo");
 
-
-        frases = new ArrayList<>();
-        categorias = new ArrayList<>();
-        autores = new ArrayList<>();
-        sb = new StringBuilder();
 
         // Creating the drawer
         drawer = findViewById(R.id.drawer_layout);
@@ -114,16 +102,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Generating the users in the Database
         dbHelper = DBHelper.getInstance(this);
 
-        // Getting the content of the database. All content is put in UserSession
-        getFrases();
-        getAutores();
-        getCategorias();
 
         //addFrase();
         //addFraseValues("Frase de prueba","2020-02-25",1,1);
 
     }
-
+/*
     public void addFraseValues(String frase, String fecha, int idAutor, int idCategoria) {
         Log.i(MainActivity.class.getSimpleName(), "Añadiendo frase ...");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -151,7 +135,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
     }
 
+ */
 
+    /*
     public void addFrase() {
         Log.i(MainActivity.class.getSimpleName(), "Añadiendo frase ...");
         Autor autor = new Autor(1, "Autor 1", 10, null, "Fontanero");
@@ -179,92 +165,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
     }
 
-    public void getAutores() {
-        apiService.getAutores().enqueue(new Callback<List<Autor>>() {
-            @Override
-            public void onResponse(Call<List<Autor>> call, Response<List<Autor>> response) {
-                if (response.isSuccessful()) {
-                    autores = new ArrayList<>(response.body());
-                    // Once fouud, I add the frases to the users session
-                    userSession.setAutores(autores);
+     */
 
 
-                    for (int i = 0; i < autores.size(); i++) {
-                        Log.d(MainActivity.class.getSimpleName(), "Autores " + i + ":" + autores.get(i).toString());
-                    }
-                    Log.i(MainActivity.class.getSimpleName(), "gotAutores");
-
-                } else {
-                    Log.i(MainActivity.class.getSimpleName(), "Get frases not succesful");
-
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<Autor>> call, Throwable t) {
-                Toast.makeText(MainActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
-            }
-        });
-    }
-
-    public void getCategorias() {
-        apiService.getCategoria().enqueue(new Callback<List<Categoria>>() {
-            @Override
-            public void onResponse(Call<List<Categoria>> call, Response<List<Categoria>> response) {
-                if (response.isSuccessful()) {
-                    categorias = new ArrayList<>(response.body());
-                    // Once fouud, I add the frases to the users session
-                    userSession.setCategorias(categorias);
-
-
-                    for (int i = 0; i < categorias.size(); i++) {
-                        Log.d(MainActivity.class.getSimpleName(), "Categorias " + i + ":" + categorias.get(i).toString());
-                    }
-                    Log.i(MainActivity.class.getSimpleName(), "GotCategorias");
-
-                } else {
-                    Log.i(MainActivity.class.getSimpleName(), "Get frases not succesful");
-
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<Categoria>> call, Throwable t) {
-                Toast.makeText(MainActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
-            }
-        });
-
-    }
-
-    public void getFrases() {
-        apiService.getFrases().enqueue(new Callback<List<Frase>>() {
-            @Override
-            public void onResponse(Call<List<Frase>> call, Response<List<Frase>> response) {
-                if (response.isSuccessful()) {
-                    frases = new ArrayList<>(response.body());
-                    // Once fouud, I add the frases to the users session
-                    userSession.setFrases(frases);
-
-
-                    for (int i = 0; i < frases.size(); i++) {
-                        Log.d(MainActivity.class.getSimpleName(), "Frase " + i + ":" + frases.get(i).toString());
-                    }
-                    Log.i(MainActivity.class.getSimpleName(), "GotFrases");
-
-                } else {
-                    Log.i(MainActivity.class.getSimpleName(), "Get frases not succesful");
-
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<Frase>> call, Throwable t) {
-                Toast.makeText(MainActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
-            }
-        });
-
-
-    }
 
 
     @Override
@@ -512,7 +415,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("Admin options");
             builder.setItems(new CharSequence[]
-                            {"Cancel", "Edit", "Eelete"},
+                            {"Cancel", "Edit", "Delete"},
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
 

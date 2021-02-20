@@ -19,11 +19,12 @@ public class Frase implements Serializable {
     public Frase() {
     }
 
-    public Frase(String texto, String fechaProgramada, Autor autor, Categoria categoria) {
+    public Frase(int id,String texto, String fechaProgramada, Autor autor, Categoria categoria) {
         this.texto = texto;
         this.fechaProgramada = fechaProgramada;
         this.autor = autor;
         this.categoria = categoria;
+        this.id = id;
     }
 
     public int getId() {

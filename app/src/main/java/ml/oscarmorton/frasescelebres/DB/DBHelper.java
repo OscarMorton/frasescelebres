@@ -18,7 +18,6 @@ public class  DBHelper extends SQLiteOpenHelper {
     private static final String CREATE_ADMIN_USER ="INSERT INTO users (username, password, esAdmin) VALUES('frasesAdmin', 'frasesAdmin', '" + TipoUsuario.ADMIN.toString() + "');";
 
     private static DBHelper sInstace = null;
-    private TipoUsuario tipoUsuario;
 
     public DBHelper(@Nullable Context context, @Nullable String name, @Nullable SQLiteDatabase.CursorFactory factory, int version) {
         super(context, DBNAME, factory, version);

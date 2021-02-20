@@ -80,7 +80,7 @@ public class UserActivity extends AppCompatActivity {
         //addFraseValues("Frase de prueba","2020-02-25",1,1);
 
     }
-
+/*
     public void addFraseValues(String frase, String fecha, int idAutor, int idCategoria) {
         Log.i(MainActivity.class.getSimpleName(), "Añadiendo frase ...");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -108,6 +108,9 @@ public class UserActivity extends AppCompatActivity {
         });
     }
 
+ */
+
+    /*
 
     public void addFrase() {
         Log.i(MainActivity.class.getSimpleName(), "Añadiendo frase ...");
@@ -135,6 +138,8 @@ public class UserActivity extends AppCompatActivity {
             }
         });
     }
+
+     */
 
     public void getFrases() {
         String content = "";

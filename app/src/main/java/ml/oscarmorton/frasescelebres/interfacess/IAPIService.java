@@ -42,7 +42,8 @@ public interface IAPIService {
 
     @POST("frase/addValues")
     @FormUrlEncoded
-    Call<Boolean> addFraseValues(@Field("texto") String texto,
+    Call<Boolean> addFraseValues(@Field("id") int id,
+                                @Field("texto") String texto,
                                  @Field("fechaProgramada") String fechaProgramada,
                                  @Field("idAutor") int idAutor,
                                  @Field("idCategoria")int idCategoria);
