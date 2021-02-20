@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 
 import ml.oscarmorton.frasescelebres.R;
-import ml.oscarmorton.frasescelebres.listeners.IFrasesListener;
+import ml.oscarmorton.frasescelebres.interfacess.listeners.IFrasesListener;
 import ml.oscarmorton.frasescelebres.model.Frase;
 
 public class AdaptorFrases extends RecyclerView.Adapter<AdaptorFrases.FrasesViewHolder> {
@@ -59,6 +59,8 @@ public class AdaptorFrases extends RecyclerView.Adapter<AdaptorFrases.FrasesView
             tvTextFrase = itemView.findViewById(R.id.tvTextFrase);
             tvNombreAutor = itemView.findViewById(R.id.tvNombreAutor);
             tvNombreCategoria = itemView.findViewById(R.id.tvNombreCategoria);
+
+
 
             this.listener = listener;
             itemView.setOnClickListener(this);

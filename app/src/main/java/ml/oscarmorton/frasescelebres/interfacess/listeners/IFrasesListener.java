@@ -1,4 +1,4 @@
-package ml.oscarmorton.frasescelebres.listeners;
+package ml.oscarmorton.frasescelebres.interfacess.listeners;
 
 public interface IFrasesListener {
 

@@ -1,4 +1,4 @@
-package ml.oscarmorton.frasescelebres.fragments;
+package ml.oscarmorton.frasescelebres.fragments.basic;
 
 
 import android.os.Bundle;

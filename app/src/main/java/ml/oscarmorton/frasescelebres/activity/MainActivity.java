@@ -6,7 +6,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceManager;
 
 import android.content.Intent;
@@ -27,14 +26,16 @@ import java.util.List;
 import ml.oscarmorton.frasescelebres.DB.DBHelper;
 import ml.oscarmorton.frasescelebres.R;
 import ml.oscarmorton.frasescelebres.UserSession;
-import ml.oscarmorton.frasescelebres.fragments.AutoresEdidFragment;
-import ml.oscarmorton.frasescelebres.fragments.AutoresFragment;
-import ml.oscarmorton.frasescelebres.fragments.CategoriaEdidFragment;
-import ml.oscarmorton.frasescelebres.fragments.CategoriaFragment;
-import ml.oscarmorton.frasescelebres.fragments.FrasesEdidFragment;
-import ml.oscarmorton.frasescelebres.fragments.FrasesFragment;
+import ml.oscarmorton.frasescelebres.fragments.basic.AutoresEdidFragment;
+import ml.oscarmorton.frasescelebres.fragments.basic.AutoresFragment;
+import ml.oscarmorton.frasescelebres.fragments.basic.CategoriaEdidFragment;
+import ml.oscarmorton.frasescelebres.fragments.basic.CategoriaFragment;
+import ml.oscarmorton.frasescelebres.fragments.basic.FrasesEdidFragment;
+import ml.oscarmorton.frasescelebres.fragments.basic.FrasesFragment;
 import ml.oscarmorton.frasescelebres.interfacess.IAPIService;
-import ml.oscarmorton.frasescelebres.listeners.IFrasesListener;
+import ml.oscarmorton.frasescelebres.interfacess.listeners.IAutorListener;
+import ml.oscarmorton.frasescelebres.interfacess.listeners.ICategoriaListener;
+import ml.oscarmorton.frasescelebres.interfacess.listeners.IFrasesListener;
 import ml.oscarmorton.frasescelebres.model.Autor;
 import ml.oscarmorton.frasescelebres.model.Categoria;
 import ml.oscarmorton.frasescelebres.model.Frase;
@@ -43,22 +44,16 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, IFrasesListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, IFrasesListener, IAutorListener, ICategoriaListener {
 
     /*TODO
-       list all frases
-       list all author
-       list all categories
        show list of particular frases/author/category
+       Exception control cant connect
+       Delete frase/autor/categoria
+       modify frase/autor/categoria
        Frase del dia
        Make read me!
        Maybes:
-
-
-
-
-
-       
 
      */
     private IAPIService apiService;
@@ -127,25 +122,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navCategoryEdid = menuNav.findItem(R.id.nav_edid_category);
 
         // Deactivating the nav items by default
-        navFrases.setEnabled(false);
-        navFrasesEdid.setEnabled(false);
-        navAuthor.setEnabled(false);
-        navAuthorEdid.setEnabled(false);
-        navCategory.setEnabled(false);
-        navCategoryEdid.setEnabled(false);
+        navFrases.setVisible(false);
+        navFrasesEdid.setVisible(false);
+        navAuthor.setVisible(false);
+        navAuthorEdid.setVisible(false);
+        navCategory.setVisible(false);
+        navCategoryEdid.setVisible(false);
 
         // Depending on the user, we activate navigation items
         if (currentUserPermissions.equalsIgnoreCase("admin")) {
-            navFrases.setEnabled(true);
-            navFrasesEdid.setEnabled(true);
-            navAuthor.setEnabled(true);
-            navAuthorEdid.setEnabled(true);
-            navCategory.setEnabled(true);
-            navCategoryEdid.setEnabled(true);
+            navFrases.setVisible(true);
+            navFrasesEdid.setVisible(true);
+            navAuthor.setVisible(true);
+            navAuthorEdid.setVisible(true);
+            navCategory.setVisible(true);
+            navCategoryEdid.setVisible(true);
         } else if (currentUserPermissions.equalsIgnoreCase("user")) {
-            navFrases.setEnabled(true);
-            navAuthor.setEnabled(true);
-            navCategory.setEnabled(true);
+            navFrases.setVisible(true);
+            navAuthor.setVisible(true);
+            navCategory.setVisible(true);
         }
 
 
@@ -255,13 +250,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         switch (item.getItemId()) {
             case R.id.nav_frases:
-                loadFragmentTest();
+                loadFragmentFrases(FrasesFragment.SeachType.NONE, 0);
 
                 break;
             case R.id.nav_author:
+                loadFragmentAutores();
                 break;
             case R.id.nav_category:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new CategoriaFragment()).commit();
+                loadFragmentCategoria();
                 break;
             case R.id.nav_edid_frase:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new FrasesEdidFragment()).commit();
@@ -324,20 +320,74 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return super.onOptionsItemSelected(item);
     }
 
-    public void loadFragmentTest() {
+    public void loadFragmentFrases( FrasesFragment.SeachType type, int id) {
         FrasesFragment frasesFragment = new FrasesFragment();
         Bundle bundle;
         frasesFragment.setFrasesListener(this);
         bundle = new Bundle();
-        bundle.putSerializable(FrasesFragment.KEY_FRASES, userSession); // CONTINUE HERE
+        bundle.putSerializable(FrasesFragment.KEY_FRASES, userSession);
+
+        switch (type){
+            case NONE:
+                // do nothing
+                break;
+            case AUTOR:
+                bundle.putInt(FrasesFragment.KEY_TYPE, 1);
+                break;
+            case CATEGORIA:
+                bundle.putInt(FrasesFragment.KEY_TYPE, 2);
+                break;
+        }
+        bundle.putInt(FrasesFragment.KEY_ID, id);
+
         frasesFragment.setArguments(bundle);
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, frasesFragment).commit();
 
     }
 
+    public void loadFragmentAutores() {
+        AutoresFragment autoresFragment = new AutoresFragment();
+        Bundle bundle;
+        autoresFragment.setAutoresListener(this);
+        bundle = new Bundle();
+
+        bundle.putSerializable(AutoresFragment.KEY_AUTORES, userSession); // CONTINUE HERE
+
+        autoresFragment.setArguments(bundle);
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, autoresFragment).commit();
+
+    }
+
+    public void loadFragmentCategoria() {
+        CategoriaFragment categoriaFragment = new CategoriaFragment();
+        Bundle bundle;
+        categoriaFragment.setCategoriaListener(this);
+        bundle = new Bundle();
+        bundle.putSerializable(CategoriaFragment.KEY_CATEGORIA, userSession); // CONTINUE HERE
+        categoriaFragment.setArguments(bundle);
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, categoriaFragment).commit();
+
+    }
     @Override
     public void onFraseSelected(int position) {
         Log.d(MainActivity.class.getSimpleName(), "Frase selected: ");
         Toast.makeText(this, "Frase seleccionado", Toast.LENGTH_SHORT).show();
+
+
+    }
+
+    @Override
+    public void onAutorSelected(int position) {
+
+        loadFragmentFrases(FrasesFragment.SeachType.AUTOR, position);
+    }
+
+    @Override
+    public void onCategoriaSelected(int position) {
+        Toast.makeText(this,"Categoria Selected", Toast.LENGTH_SHORT).show();
+        loadFragmentFrases(FrasesFragment.SeachType.CATEGORIA, position);
+
+
+
     }
 }

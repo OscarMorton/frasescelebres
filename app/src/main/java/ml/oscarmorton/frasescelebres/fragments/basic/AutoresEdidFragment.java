@@ -1,4 +1,4 @@
-package ml.oscarmorton.frasescelebres.fragments;
+package ml.oscarmorton.frasescelebres.fragments.basic;
 
 
 import android.os.Bundle;
@@ -12,11 +12,11 @@ import androidx.fragment.app.Fragment;
 
 import ml.oscarmorton.frasescelebres.R;
 
-public class FrasesEdidFragment extends Fragment {
+public class AutoresEdidFragment extends Fragment {
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_frases_edid,container,false);
+        return inflater.inflate(R.layout.fragment_autores_edid,container,false);
     }
 }
