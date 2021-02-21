@@ -26,8 +26,10 @@ public class UserSession implements Serializable {
     private ArrayList<Frase> frases;
     private ArrayList<Autor> autores;
     private ArrayList<Categoria> categorias;
-    transient IAPIService apiService;
+    transient IAPIService apiService; // I have to make it transient so I can serialize it
     private static int lastIDFrases;
+    private static int lastIDAutor;
+    private static int lastIDCategoria;
 
     public UserSession(Context context) {
         this.frases = new ArrayList<>();
@@ -38,13 +40,11 @@ public class UserSession implements Serializable {
         getAutoresStart();
         getCategoriasStart();
 
-        //TODO GET BACK TO THIS
 
         Log.d("TESTINGSIZE", String.valueOf(frases.size()));
 
 
     }
-
 
 
     public void getAutoresStart() {
@@ -55,7 +55,7 @@ public class UserSession implements Serializable {
                     autores = new ArrayList<>(response.body());
                     // Once fouud, I add the frases to the users session
                     setAutores(autores);
-
+                    lastIDAutor = autores.get(autores.size() - 1).getId();
 
                     for (int i = 0; i < autores.size(); i++) {
                         Log.d(MainActivity.class.getSimpleName(), "Autores " + i + ":" + autores.get(i).toString());
@@ -83,6 +83,8 @@ public class UserSession implements Serializable {
                     categorias = new ArrayList<>(response.body());
                     // Once fouud, I add the frases to the users session
                     setCategorias(categorias);
+                    lastIDCategoria = categorias.get(categorias.size() - 1).getId();
+
 
 
                     for (int i = 0; i < categorias.size(); i++) {
@@ -110,7 +112,7 @@ public class UserSession implements Serializable {
             public void onResponse(Call<List<Frase>> call, Response<List<Frase>> response) {
                 if (response.isSuccessful()) {
                     frases = new ArrayList<>(response.body());
-                    lastIDFrases = frases.get(frases.size() -1).getId();
+                    lastIDFrases = frases.get(frases.size() - 1).getId();
                     // Once fouud, I add the frases to the users session
                     setFrases(frases);
 
@@ -163,15 +165,18 @@ public class UserSession implements Serializable {
     public void setAutores(ArrayList<Autor> autores) {
         this.autores = autores;
     }
-
     public ArrayList<Categoria> getCategorias() {
         return categorias;
     }
-
     public void setCategorias(ArrayList<Categoria> categorias) {
         this.categorias = categorias;
     }
 
+    /**
+     * Finds a frase from ID
+     * @param id
+     * @return
+     */
     public ArrayList<Frase> getFrasesFromAutorId(int id) {
 
         ArrayList<Frase> frasesReturn = new ArrayList<>();
@@ -184,8 +189,12 @@ public class UserSession implements Serializable {
         return frasesReturn;
     }
 
+    /**
+     * Finds the author from an ID
+     * @param id
+     * @return
+     */
     public Autor getAutorById(int id) {
-
         Autor autor = null;
 
         for (int i = 0; i < autores.size(); i++) {
@@ -214,6 +223,24 @@ public class UserSession implements Serializable {
         int aux = lastIDFrases;
 
         lastIDFrases++;
+
+        return aux;
+    }
+
+    public int getLastIdUserAutores() {
+
+        int aux = lastIDAutor;
+
+        lastIDAutor++;
+
+        return aux;
+    }
+
+    public int getLastIdUserCategoria() {
+
+        int aux = lastIDCategoria;
+
+        lastIDCategoria++;
 
         return aux;
     }

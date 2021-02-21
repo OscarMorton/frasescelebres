@@ -40,6 +40,12 @@ public interface IAPIService {
     @POST("frase/add")
     Call<Boolean> addFrase(@Body Frase frase);
 
+    @POST("autor/add")
+    Call<Boolean> addAutor(@Body Autor autor);
+
+    @POST("categoria/add")
+    Call<Boolean> addCategoria(@Body Categoria categoria);
+
     @POST("frase/addValues")
     @FormUrlEncoded
     Call<Boolean> addFraseValues(@Field("id") int id,

@@ -16,10 +16,14 @@
         tools:targetApi="n">
 
         <activity android:name=".activity.MainActivity">
-
         </activity>
+
         <activity android:name=".activity.SettingsActivity" />
         <activity android:name=".activity.AddFrase"/>
+        <activity android:name=".activity.AddAutor"/>
+        <activity android:name=".activity.AddCategoria"/>
+
+
 
         <activity android:name=".activity.LoginActivity">
 

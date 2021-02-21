@@ -59,11 +59,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public DBHelper dbHelper;
     private String currentUserPermissions;
 
-
     public UserSession userSession;
 
     private DrawerLayout drawer;
-
 
 
     @Override
@@ -176,7 +174,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         switch (item.getItemId()) {
             case R.id.nav_frases:
-                loadFragmentFrases(FrasesFragment.SeachType.NONE, 0);
+                loadFragmentFrases(FrasesFragment.SeachType.ALL, 0);
 
                 break;
             case R.id.nav_author:
@@ -219,9 +217,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
+
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
@@ -236,8 +232,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
 
-    // Load fragments
-
+    /**
+     *
+     * @param type The type of list we want
+     * @param id The id of the autho or category
+     */
     public void loadFragmentFrases(FrasesFragment.SeachType type, int id) {
         FrasesFragment frasesFragment = new FrasesFragment();
         Bundle bundle;
@@ -245,8 +244,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         bundle = new Bundle();
         bundle.putSerializable(FrasesFragment.KEY_FRASES, userSession);
 
+        // We sent a in a bundle of the type of list we want, authors, categories or all of them
         switch (type) {
-            case NONE:
+            case ALL:
                 // do nothing
                 break;
             case AUTOR:
@@ -256,7 +256,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 bundle.putInt(FrasesFragment.KEY_TYPE, 2);
                 break;
         }
+
         bundle.putInt(FrasesFragment.KEY_ID, id);
+
+        if(currentUserPermissions.equalsIgnoreCase("admin")){
+            bundle.putInt(FrasesFragment.KEY_USER_PERMISION_FRASES,1);
+        }else{
+            bundle.putInt(FrasesFragment.KEY_USER_PERMISION_FRASES,0);
+
+        }
+
 
         frasesFragment.setArguments(bundle);
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, frasesFragment).commit();
@@ -270,7 +279,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         autoresFragment.setAutoresListener(this);
         bundle = new Bundle();
 
-        bundle.putSerializable(AutoresFragment.KEY_AUTORES, userSession); // CONTINUE HERE
+        bundle.putSerializable(AutoresFragment.KEY_AUTORES, userSession);
+
+        if(currentUserPermissions.equalsIgnoreCase("admin")){
+            bundle.putInt(AutoresFragment.KEY_USER_PERMISION_AUTOR,1);
+        }else{
+            bundle.putInt(AutoresFragment.KEY_USER_PERMISION_AUTOR,0);
+
+        }
 
         autoresFragment.setArguments(bundle);
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, autoresFragment).commit();
@@ -283,7 +299,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Bundle bundle;
         categoriaFragment.setCategoriaListener(this);
         bundle = new Bundle();
-        bundle.putSerializable(CategoriaFragment.KEY_CATEGORIA, userSession); // CONTINUE HERE
+        bundle.putSerializable(CategoriaFragment.KEY_CATEGORIA, userSession);
+
+        if(currentUserPermissions.equalsIgnoreCase("admin")){
+            bundle.putInt(CategoriaFragment.KEY_USER_PERMISION_CATEGORIA,1);
+        }else{
+            bundle.putInt(CategoriaFragment.KEY_USER_PERMISION_CATEGORIA,0);
+
+        }
+
+
         categoriaFragment.setArguments(bundle);
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, categoriaFragment).commit();
         setTitle("Categorias");

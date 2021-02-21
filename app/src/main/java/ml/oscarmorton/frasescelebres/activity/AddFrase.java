@@ -59,6 +59,7 @@ public class AddFrase  extends AppCompatActivity {
 
         Intent i = getIntent();
         userSession = (UserSession) i.getSerializableExtra(FrasesFragment.KEY_ADD_FRASE);
+
         sIdAutor.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, userSession.getAllAutorIds()));
         sCategoria.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, userSession.getAllCategoriasIds()));
 
@@ -93,13 +94,15 @@ public class AddFrase  extends AppCompatActivity {
         Categoria categoria = userSession.getCategoriaById(idCategoria);
 
 
-        Frase fraseAñadir = new Frase(userSession.getLastIdUserFrases(),frase, fecha, autor, categoria);
-        apiService.addFrase(fraseAñadir).enqueue(new Callback<Boolean>() {
+        Frase fraseadd = new Frase(userSession.getLastIdUserFrases(),frase, fecha, autor, categoria);
+        apiService.addFrase(fraseadd).enqueue(new Callback<Boolean>() {
             @Override
             public void onResponse(Call<Boolean> call, Response<Boolean> response) {
                 if (response.isSuccessful()) {
                     if (response.body()) {
                         Log.i(MainActivity.class.getSimpleName(), "Frase añadida correctamente");
+                        Toast.makeText(AddFrase.this, "Frase Saved!", Toast.LENGTH_SHORT).show();
+
                     } else {
                         Toast.makeText(AddFrase.this, "Frase not added, make sure the date is not repeating", Toast.LENGTH_SHORT).show();
                         Log.i(MainActivity.class.getSimpleName(), "Error al añadir la frase");

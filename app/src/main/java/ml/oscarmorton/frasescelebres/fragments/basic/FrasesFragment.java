@@ -34,10 +34,12 @@ public class FrasesFragment extends Fragment implements  View.OnClickListener {
     public static final String KEY_TYPE = "KEY_TYPE";
     public static final String KEY_ID = "KEY_ID";
     public static final String KEY_ADD_FRASE = "KEY_ADD_FRASE";
+    public static final String KEY_USER_PERMISION_FRASES = "KEY_USER_PERMISION_FRASES";
+
 
 
     public enum SeachType{
-        AUTOR,CATEGORIA, NONE
+        AUTOR,CATEGORIA, ALL
     }
 
 
@@ -47,6 +49,7 @@ public class FrasesFragment extends Fragment implements  View.OnClickListener {
     private UserSession userSession;
     private int type;
     private int id;
+    private int userPermision;
     private FloatingActionButton fabFrases;
     private View view;
 
@@ -57,14 +60,16 @@ public class FrasesFragment extends Fragment implements  View.OnClickListener {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         id = 0;
+        userPermision = 0;
         userSession = (UserSession) getArguments().getSerializable(KEY_FRASES);
         type = -1;
         type = getArguments().getInt(KEY_TYPE);
-        Log.d("TESTFRAGMENT", "TYPE :  " + type);
-        //TODO TEST THIS
+        userPermision = getArguments().getInt(KEY_USER_PERMISION_FRASES);
+
+
+        //If we are searching or a specific author/category, we get the correct list
         if(type == 1){
             id = getArguments().getInt(FrasesFragment.KEY_ID);
-
             frases = userSession.getFrasesFromAutorId(id + 1 );
         }else if(type == 2){
             id = getArguments().getInt(FrasesFragment.KEY_ID);
@@ -73,11 +78,16 @@ public class FrasesFragment extends Fragment implements  View.OnClickListener {
             frases = userSession.getFrases();
 
         }
+
+
         view = inflater.inflate(R.layout.fragment_frases, container, false);
         fabFrases = view.findViewById(R.id.fabFrases);
         fabFrases.setOnClickListener(this);
 
-
+        // If the user is not an admin, we hide the add button
+        if(userPermision == 0){
+            fabFrases.setVisibility(View.INVISIBLE);
+        }
 
         return view;
     }
@@ -94,6 +104,7 @@ public class FrasesFragment extends Fragment implements  View.OnClickListener {
     }
     @Override
     public void onClick(View v) {
+
         Intent  addFraseIntent = new Intent(getContext(), AddFrase.class);
         addFraseIntent.putExtra(FrasesFragment.KEY_ADD_FRASE, userSession);
         startActivity(addFraseIntent);
